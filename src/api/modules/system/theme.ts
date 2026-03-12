@@ -1,4 +1,4 @@
-import apiClient from './config'
+import apiClient from  '@/utils/http'
 
 export interface Theme {
   id: number

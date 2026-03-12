@@ -73,8 +73,8 @@ async function fetchPages() {
   loading.value = false
 }
 
-function handleCreate() { router.push('/pages/create') }
-function handleEdit(row: Page) { router.push('/pages/edit/' + row.id) }
+function handleCreate() { router.push('/system/pages/create') }
+function handleEdit(row: Page) { router.push('/system/pages/edit/' + row.id) }
 function handlePreview(row: Page) {
   if (row.status === 'draft') { ElMessage.warning('草稿状态页面无法预览'); return }
   window.open('/' + row.slug, '_blank')

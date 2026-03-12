@@ -103,12 +103,12 @@ async function handleSave() {
   else response = await pageApi.create(form.value)
   if (response.success) {
     ElMessage.success(isEdit.value ? '更新成功' : '创建成功')
-    router.push('/pages')
+    router.push('/system/pages')
   }
   saving.value = false
 }
 
-function handleCancel() { router.push('/pages') }
+function handleCancel() { router.push('/system/pages') }
 function handleUploadSuccess() { ElMessage.success('文件上传成功') }
 function handleUploadError() { ElMessage.error('文件上传失败') }
 

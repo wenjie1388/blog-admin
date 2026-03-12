@@ -157,8 +157,9 @@ function handleCreated(editor: IDomEditor) {
 async function fetchCategories() {
   try {
     const response = await categoryApi.getAll()
-    if (response.success) {
-      categories.value = response.data
+		console.log('fetchCategories', response.data)
+    if (response.data.success) {
+      categories.value = response.data.data
     }
   } catch (error) {
     console.error('Failed to fetch categories:', error)
@@ -220,13 +221,13 @@ async function handleSave(status: 'draft' | 'published') {
       const response = await articleApi.update(articleId.value, data)
       if (response.success) {
         ElMessage.success('更新成功')
-        router.push('/articles')
+        router.push('/content/articles')
       }
     } else {
       const response = await articleApi.create(data)
       if (response.success) {
         ElMessage.success('创建成功')
-        router.push('/articles')
+        router.push('/content/articles')
       }
     }
   } catch (error) {

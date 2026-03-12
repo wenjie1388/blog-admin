@@ -97,7 +97,7 @@ const router = useRouter()
 
 // State
 const articles = ref<Article[]>([])
-const loading = ref(false)
+const loading = ref(true)
 const currentPage = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
@@ -114,9 +114,9 @@ async function fetchArticles() {
       search: searchQuery.value || undefined,
       status: statusFilter.value || undefined,
     })
-    if (response.success) {
-      articles.value = response.data
-      total.value = response.pagination.total
+    if (response.data.success) {
+      articles.value = response.data.data
+      total.value = response.data.pagination.total
     }
   } catch (error) {
     console.error('Failed to fetch articles:', error)
@@ -126,11 +126,11 @@ async function fetchArticles() {
 }
 
 function handleCreate() {
-  router.push('/articles/create')
+  router.push('/content/articles/create')
 }
 
 function handleEdit(row: Article) {
-  router.push(`/articles/edit/${row.id}`)
+  router.push(`/content/articles/edit/${row.id}`)
 }
 
 function handleDelete(row: Article) {

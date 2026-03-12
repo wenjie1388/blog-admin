@@ -14,6 +14,7 @@
 
       <el-menu
         :default-active="activeMenu"
+        :default-openeds="openedMenus"
         :collapse="isCollapsed"
         :collapse-transition="false"
         router
@@ -22,16 +23,31 @@
         text-color="#bfcbd9"
         active-text-color="#409eff"
       >
-        <el-menu-item
-          v-for="item in menuItems"
-          :key="item.path"
-          :index="item.path"
-        >
-          <el-icon>
-            <component :is="item.icon" />
-          </el-icon>
-          <template #title>{{ item.title }}</template>
-        </el-menu-item>
+        <template v-for="item in menuItems" :key="item.path">
+          <!-- 有子菜单的分组 -->
+          <el-sub-menu v-if="item.children?.length" :index="item.path">
+            <template #title>
+              <el-icon>
+                <component :is="item.icon" />
+              </el-icon>
+              <span>{{ item.title }}</span>
+            </template>
+            <el-menu-item
+              v-for="child in item.children"
+              :key="child.path"
+              :index="child.path"
+            >
+              <template #title>{{ child.title }}</template>
+            </el-menu-item>
+          </el-sub-menu>
+          <!-- 普通菜单项 -->
+          <el-menu-item v-else :index="item.path">
+            <el-icon>
+              <component :is="item.icon" />
+            </el-icon>
+            <template #title>{{ item.title }}</template>
+          </el-menu-item>
+        </template>
       </el-menu>
     </aside>
 
@@ -170,14 +186,39 @@ const user = computed(() => authStore.user)
 const activeMenu = computed(() => route.path)
 
 const menuItems = computed(() => {
-  return router.getRoutes()
-    .find(r => r.name === 'Layout')?.children
-    ?.filter(r => !r.meta?.hidden)
-    ?.map(r => ({
-      path: r.path,
-      title: r.meta?.title as string,
-      icon: r.meta?.icon as string,
-    })) || []
+  const layoutRoute = router.getRoutes().find(r => r.name === 'Layout')
+  if (!layoutRoute?.children) return []
+
+  return layoutRoute.children
+    .filter(r => !r.meta?.hidden)
+    .map(r => {
+      const item: any = {
+        path: '/' + r.path,
+        title: r.meta?.title as string,
+        icon: r.meta?.icon as string,
+      }
+      // 如果有子路由，处理子菜单
+      if (r.children && r.children.length > 0) {
+        item.children = r.children
+          .filter(c => !c.meta?.hidden)
+          .map(c => ({
+            path: '/' + r.path + '/' + c.path,
+            title: c.meta?.title as string,
+          }))
+      }
+      return item
+    })
+})
+
+// 默认展开系统设置菜单
+const openedMenus = computed(() => {
+  const systemMenus: string[] = []
+  menuItems.value.forEach(item => {
+    if (item.children?.some((c: any) => c.path === activeMenu.value)) {
+      systemMenus.push(item.path)
+    }
+  })
+  return systemMenus
 })
 
 // Methods
@@ -188,7 +229,7 @@ function toggleSidebar() {
 function handleCommand(command: string) {
   switch (command) {
     case 'profile':
-      router.push('/settings')
+      router.push('/system/settings')
       break
     case 'password':
       passwordDialogVisible.value = true

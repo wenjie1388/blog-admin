@@ -1,4 +1,4 @@
-import apiClient from './config'
+import apiClient from '@/utils/http'
 
 export const uploadApi = {
   uploadFile(file: File) {
